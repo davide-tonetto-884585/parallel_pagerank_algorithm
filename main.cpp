@@ -27,15 +27,15 @@ int main(int argc, char *argv[]) {
     std::cout << "File parsed!" << std::endl << std::endl;
     std::cout << "Number of nodes: " << n << std::endl;
     std::cout << "Number of edges: " << edges.size() << std::endl;
-    std::cout << "Density: " << static_cast<double>(edges.size()) / (n * (n - 1)) << std::endl;
     std::cout << "Number of threads available: " << omp_get_max_threads() << std::endl << std::endl;
 
     auto begin = std::chrono::high_resolution_clock::now();
     graph g(n, edges);
     auto end = std::chrono::high_resolution_clock::now();
-    // g.print();
+    g.print(10);
 
     std::cout << "Number of dead ends: " << g.get_num_dead_ends() << std::endl;
+    std::cout << "Density: " << g.get_density() << std::endl;
     std::cout << "Graph creation time: "
               << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
               << "ms" << std::endl;
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
               << std::endl;
 
     // compare results
-    if (!utility::compare_vectors(r_seq, r_par, 1e-6)) {
+    if (!utility::compare_vectors(r_seq, r_par)) {
         std::cerr << "Results are different!" << std::endl;
         return 1;
     }
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
               << std::endl;
 
     // compare results
-    if (!utility::compare_vectors(r_seq_v2, r_seq, 1e-6)) {
+    if (!utility::compare_vectors(r_seq_v2, r_seq)) {
         std::cerr << "Results are different!" << std::endl;
         return 1;
     }
@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
               << std::endl;
 
     // compare results
-    if (!utility::compare_vectors(r_par_v2, r_par, 1e-6)) {
+    if (!utility::compare_vectors(r_par_v2, r_par)) {
         std::cerr << "Results are different!" << std::endl;
         return 1;
     }

@@ -13,10 +13,10 @@
 #include "utility.h"
 
 namespace utility {
-    std::vector <std::pair<unsigned int, unsigned int>>
+    std::vector<std::pair<unsigned int, unsigned int>>
     parse_edges_from_file_and_normalize(const std::string &filename) {
         std::unordered_map<unsigned int, unsigned int> map;
-        std::vector <std::pair<unsigned int, unsigned int>> edges;
+        std::vector<std::pair<unsigned int, unsigned int>> edges;
         std::ifstream file(filename);
         unsigned int last_id = 0, u, v;
         std::string line;
@@ -71,54 +71,58 @@ namespace utility {
     }
 
     std::unordered_map<std::string, std::vector<std::pair<double, double>>> get_stats_pagerank(const graph &g,
-                                                                                               int max_n_threads) {
+                                                                                               int max_n_threads,
+                                                                                               unsigned int times) {
         // compute speedup
         std::unordered_map<std::string, std::vector<std::pair<double, double>>> stats;
         std::vector<float> v(g.get_n(), static_cast<float>(1) / g.get_n());
         unsigned int n_threads = max_n_threads == -1 ? omp_get_max_threads() : max_n_threads;
         for (unsigned int i = 1; i <= n_threads; i++) {
-            if (i == 1) {
-                auto begin = std::chrono::high_resolution_clock::now();
-                g.seq_page_rank(v, 0.85, 50, 1e-7);
-                auto end = std::chrono::high_resolution_clock::now();
-                stats["pagerank_speedup"].emplace_back(i,
-                                                       std::chrono::duration_cast<std::chrono::milliseconds>(
-                                                               end - begin).count());
-            } else {
-                auto begin = std::chrono::high_resolution_clock::now();
-                g.par_page_rank(v, 0.85, 50, 1e-7, i);
-                auto end = std::chrono::high_resolution_clock::now();
-                stats["pagerank_speedup"].emplace_back(i,
-                                                       std::chrono::duration_cast<std::chrono::milliseconds>(
-                                                               end - begin).count());
+            long double mean = 0;
+            for (unsigned int k = 0; k < times; ++k) {
+                if (i == 1) {
+                    auto begin = std::chrono::high_resolution_clock::now();
+                    g.seq_page_rank(v, 0.85, 50, 1e-7);
+                    auto end = std::chrono::high_resolution_clock::now();
+                    mean += std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+                } else {
+                    auto begin = std::chrono::high_resolution_clock::now();
+                    g.par_page_rank(v, 0.85, 50, 1e-7, i);
+                    auto end = std::chrono::high_resolution_clock::now();
+                    mean += std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+                }
             }
+
+            stats["pagerank_speedup"].emplace_back(i, mean / times);
         }
 
         return stats;
     }
 
     std::unordered_map<std::string, std::vector<std::pair<double, double>>> get_stats_pagerank(const graph_by_row &g,
-                                                                                               int max_n_threads) {
+                                                                                               int max_n_threads,
+                                                                                               unsigned int times) {
         // compute speedup
         std::unordered_map<std::string, std::vector<std::pair<double, double>>> stats;
         std::vector<float> v(g.get_n(), static_cast<float>(1) / g.get_n());
         unsigned int n_threads = max_n_threads == -1 ? omp_get_max_threads() : max_n_threads;
         for (unsigned int i = 1; i <= n_threads; i++) {
-            if (i == 1) {
-                auto begin = std::chrono::high_resolution_clock::now();
-                g.seq_page_rank(v, 0.85, 50, 1e-7);
-                auto end = std::chrono::high_resolution_clock::now();
-                stats["pagerank_speedup"].emplace_back(i,
-                                                       std::chrono::duration_cast<std::chrono::milliseconds>(
-                                                               end - begin).count());
-            } else {
-                auto begin = std::chrono::high_resolution_clock::now();
-                g.par_page_rank(v, 0.85, 50, 1e-7, i);
-                auto end = std::chrono::high_resolution_clock::now();
-                stats["pagerank_speedup"].emplace_back(i,
-                                                       std::chrono::duration_cast<std::chrono::milliseconds>(
-                                                               end - begin).count());
+            long double mean = 0;
+            for (unsigned int k = 0; k < times; ++k) {
+                if (i == 1) {
+                    auto begin = std::chrono::high_resolution_clock::now();
+                    g.seq_page_rank(v, 0.85, 50, 1e-7);
+                    auto end = std::chrono::high_resolution_clock::now();
+                    mean += std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+                } else {
+                    auto begin = std::chrono::high_resolution_clock::now();
+                    g.par_page_rank(v, 0.85, 50, 1e-7, i);
+                    auto end = std::chrono::high_resolution_clock::now();
+                    mean += std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+                }
             }
+
+            stats["pagerank_speedup"].emplace_back(i, mean / times);
         }
 
         return stats;

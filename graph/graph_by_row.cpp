@@ -9,7 +9,7 @@
 #include "../utility.h"
 
 graph_by_row::graph_by_row(const unsigned int &n, const std::vector<std::pair<unsigned int, unsigned int>> &edges) :
-        n(n), dead_ends_ids(nullptr) {
+        n(n), m(edges.size()), dead_ends_ids(nullptr) {
     row_ids = new std::vector<unsigned int> *[n]{nullptr};
     count_col_elements = std::vector<unsigned int>(n, 0);
 
@@ -21,7 +21,7 @@ graph_by_row::graph_by_row(const unsigned int &n, const std::vector<std::pair<un
         count_col_elements[edge.first]++;
     }
 
-    for (unsigned int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; ++i) {
         if (row_ids[i] != nullptr)
             row_ids[i]->shrink_to_fit();
         if (count_col_elements[i] == 0) {
@@ -35,7 +35,7 @@ graph_by_row::graph_by_row(const unsigned int &n, const std::vector<std::pair<un
 }
 
 graph_by_row::~graph_by_row() {
-    for (unsigned int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; ++i) {
         if (row_ids[i] != nullptr) {
             delete row_ids[i];
         }
@@ -54,7 +54,7 @@ unsigned int graph_by_row::get_num_dead_ends() const {
 }
 
 void graph_by_row::print() const {
-    for (unsigned int i = 0; i < n; i++) {
+    for (unsigned int i = 0; i < n; ++i) {
         if (row_ids[i] != nullptr) {
             std::cout << i << " -> ";
             for (auto &id: *row_ids[i]) {
@@ -76,7 +76,7 @@ std::vector<float> graph_by_row::seq_page_rank(const std::vector<float> &v, floa
         std::fill(r_new.begin(), r_new.end(), 0.0);
         sum = 0;
 
-        for (unsigned int i = 0; i < n; i++) {
+        for (unsigned int i = 0; i < n; ++i) {
             if (row_ids[i] != nullptr) {
                 for (auto &j: *row_ids[i]) {
                     r_new[i] += r[j] / static_cast<float>(count_col_elements[j]);
@@ -125,9 +125,10 @@ graph_by_row::par_page_rank(const std::vector<float> &v, float beta, unsigned in
         sum = 0;
 
 #pragma omp parallel for if(n_thread != 1) num_threads(n_thread) default(none) \
-    firstprivate(teleportation_correction, beta, n) shared(r, r_new, count_col_elements, row_ids, dead_ends_ids) \
+    firstprivate(teleportation_correction, beta, n, m, n_thread) shared(r, r_new, count_col_elements, row_ids, dead_ends_ids) \
+    schedule(dynamic, n_thread) \
     reduction(+:sum)
-        for (unsigned int i = 0; i < n; i++) {
+        for (unsigned int i = 0; i < n; ++i) {
             if (row_ids[i] != nullptr) {
                 for (auto &j: *row_ids[i]) {
                     r_new[i] += r[j] / static_cast<float>(count_col_elements[j]);

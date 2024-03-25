@@ -3,7 +3,8 @@
 
 class graph_by_row {
 private:
-    size_t n; // number of nodesdouble
+    size_t n; // number of nodes
+    size_t m; // number of edges
 
     // sparse graph representation for adjacency graph
     std::vector<unsigned int> **row_ids; // array of node ids

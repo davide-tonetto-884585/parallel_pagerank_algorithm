@@ -6,6 +6,7 @@
 class graph {
 private:
     size_t n; // number of nodes
+    size_t m; // number of edges
 
     // sparse graph representation for adjacency graph
     std::vector<unsigned int> **col_ids; // array of node ids
@@ -21,9 +22,13 @@ public:
     // return the number of nodes
     unsigned int get_n() const;
 
+    unsigned int get_m() const;
+
+    double get_density() const;
+
     unsigned int get_num_dead_ends() const;
 
-    void print() const;
+    void print(unsigned int max_n) const;
 
     std::vector<float>
     seq_page_rank(const std::vector<float> &v, float beta, unsigned int max_iterations, double tolerance) const;

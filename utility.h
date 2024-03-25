@@ -10,18 +10,20 @@
 #include "graph/graph_by_row.h"
 
 namespace utility {
-    std::vector <std::pair<unsigned int, unsigned int>>
+    std::vector<std::pair<unsigned int, unsigned int>>
     parse_edges_from_file_and_normalize(const std::string &filename);
 
     double round(double x, unsigned int d);
 
     bool check_distribution(const std::vector<float> &r);
 
-    bool compare_vectors(const std::vector<float> &v1, const std::vector<float> &v2, double tolerance);
+    bool compare_vectors(const std::vector<float> &v1, const std::vector<float> &v2, double tolerance = 1e-4);
 
-    std::unordered_map<std::string, std::vector<std::pair<double, double>>> get_stats_pagerank(const graph &g, int max_n_threads);
+    std::unordered_map<std::string, std::vector<std::pair<double, double>>>
+    get_stats_pagerank(const graph &g, int max_n_threads, unsigned int times = 5);
 
-    std::unordered_map<std::string, std::vector<std::pair<double, double>>> get_stats_pagerank(const graph_by_row &g, int max_n_threads);
+    std::unordered_map<std::string, std::vector<std::pair<double, double>>>
+    get_stats_pagerank(const graph_by_row &g, int max_n_threads, unsigned int times = 5);
 }
 
 #endif //ASSIGNMENT_1_LMD_UTILITY_H
