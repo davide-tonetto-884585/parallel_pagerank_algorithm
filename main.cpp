@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     auto begin = std::chrono::high_resolution_clock::now();
     graph g(n, edges);
     auto end = std::chrono::high_resolution_clock::now();
-    g.print(10);
+    // g.print(10);
 
     std::cout << "Number of dead ends: " << g.get_num_dead_ends() << std::endl;
     std::cout << "Density: " << g.get_density() << std::endl;

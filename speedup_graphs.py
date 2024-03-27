@@ -22,8 +22,11 @@ def plot_speedup(dataset, seq_times, max_threads, axs, axs_index=None, title='Sp
 
     # plot all csv files
     for filename, data in dataset.items():
-        legend_name = filename[filename.index('_', filename.index('_') + 1)
-                               + 1:filename.index('.')]
+        legend_name = filename
+        if 'pagerank' in filename:
+            legend_name = filename[filename.index('_', filename.index('_') + 1)
+                                   + 1:filename.index('.')]
+
         axs.plot([x[0] for x in data], [seq_times[filename] / x[1] for x in data], label=legend_name, marker='o')
 
     # draw a line for ideal speedup and areas of interest
@@ -42,7 +45,7 @@ def plot_speedup(dataset, seq_times, max_threads, axs, axs_index=None, title='Sp
 
     axs.fill_between([x for x in range(0, max_threads + 1)],
                      [x for x in range(0, max_threads + 1)],
-                     max_threads, alpha=0.1, color="green", label="Superlinear speedup zone")
+                     max_threads, alpha=0.1, color="green", label="Super linear speedup zone")
 
     axs.set_xlim(0, max_threads)
     axs.set_ylim(0, system_cores)
@@ -52,7 +55,7 @@ def plot_speedup(dataset, seq_times, max_threads, axs, axs_index=None, title='Sp
     axs.set_title(title)
     axs.grid()
 
-    # axs.legend()
+    axs.legend()
 
 
 if __name__ == '__main__':
@@ -141,4 +144,15 @@ if __name__ == '__main__':
     fig = plt.gcf()
     fig.set_size_inches(9, 7)
 
+    plt.show()
+
+    # plot differnce in speedup between src and src_old folders
+    data_alg_old = parse_speedup_csv('src_old/pagerank_speedup_soc_LiveJournal1.csv')
+    data_alg_new = parse_speedup_csv('src/pagerank_speedup_soc_LiveJournal1.csv')
+
+    fig, axs = plt.subplots(1, 1, figsize=(8, 5))
+    plot_speedup({'Dynamic scheduling': data_alg_new, 'Static scheduling': data_alg_old},
+                 {'Dynamic scheduling': min_seq_times['pagerank_speedup_soc_LiveJournal1.csv'],
+                  'Static scheduling': min_seq_times['pagerank_speedup_soc_LiveJournal1.csv']}, 27, axs, None,
+                 'Static vs Dynamic scheduling speedup for soc_LiveJournal1 graph')
     plt.show()
