@@ -18,6 +18,8 @@ namespace utility {
         std::unordered_map<unsigned int, unsigned int> map;
         std::vector<std::pair<unsigned int, unsigned int>> edges;
         std::ifstream file(filename);
+        // std::ofstream new_file{"../graphs/normalized_twitter_combined.txt"};
+
         unsigned int last_id = 0, u, v;
         std::string line;
         if (file.is_open()) {
@@ -39,12 +41,16 @@ namespace utility {
                     map[v] = last_id++;
 
                 edges.emplace_back(map[u], map[v]);
+
+                // write to new file
+                // new_file << map[u] << " " << map[v] << std::endl;
             }
         } else {
             std::cerr << "Error: cannot open file " << filename << std::endl;
             exit(1);
         }
 
+        // new_file.close();
         return edges;
     }
 

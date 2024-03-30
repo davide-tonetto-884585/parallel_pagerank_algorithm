@@ -8,10 +8,6 @@
 #include "graph.h"
 #include "../utility.h"
 
-#define CHUNK_SIZE omp_get_max_threads()
-
-#pragma omp declare reduction (merge : std::vector<int> : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()))
-
 graph::graph(const unsigned int &n, const std::vector<std::pair<unsigned int, unsigned int>> &edges)
         : n(n), m(edges.size()) {
     col_ids = new std::vector<unsigned int> *[n]{nullptr};
@@ -108,7 +104,6 @@ graph::seq_page_rank(const std::vector<float> &v, float beta, unsigned int max_i
     std::vector<float> r(v), r_new(v);
     unsigned int iterations = 0;
     float sum, teleportation_correction = (1 - beta) / static_cast<float>(n);
-
 
     do {
         r = r_new;

@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <omp.h>
 #include <fstream>
+#include <numeric>
 #include "graph/graph.h"
 #include "graph/graph_by_row.h"
 #include "utility.h"
