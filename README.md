@@ -1,3 +1,9 @@
+# Introduction
+
+This project aims to implement a multi-threaded version of the PageRank algorithm. The algorithm is used to rank web pages
+in search engines, and it is based on the idea that a page is important if it is linked by other important pages. The algorithm is
+iterative and computes the PageRank values of the nodes in a graph. See the report for firther details.
+
 # Project Structure
 
 The project is divided into the following files:
